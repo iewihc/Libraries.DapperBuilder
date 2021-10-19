@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Dapper-Query-Builder</id>
+    <version>1.0.0</version>
+    <title>Dapper.Query.Builder</title>
+    <authors>Wei</authors>
+    <owners>Wei</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/Drizin/Libraries.DapperBuilder</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Dapper Query Builder using String Interpolation and Fluent API</description>
+    <copyright>Copyright Rick Drizin 2020</copyright>
+    <tags>dapper;query builder</tags>
+    <repository type="git" url="https://github.com/Drizin/Libraries.DapperBuilder" commit="e313e56c574147726bf4d15c0d61980cc0a8c853" />
+    <dependencies>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\net472\Libraries.DapperBuilder.*" target="lib\net472" />
+    <file src="bin\Release\netstandard2.0\Libraries.DapperBuilder.*" target="lib\netstandard2.0" />
+  </files>
+</package>

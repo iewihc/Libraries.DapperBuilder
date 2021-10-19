@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Authors>Wei</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Drizin/DapperQueryBuilder/</PackageProjectUrl>
+    <Description>Dapper Query Builder</Description>
+    <Copyright>Wei</Copyright>
+    <Company>Wei</Company>
+    <Version>1.0.3</Version>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>Dapper-QueryBuilder</PackageId>
+    <DocumentationFile>DapperQueryBuilder.xml</DocumentationFile>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+  </ItemGroup>
+
+</Project>

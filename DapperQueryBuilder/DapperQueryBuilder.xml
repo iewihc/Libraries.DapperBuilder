@@ -1,0 +1,783 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Libraries.DapperBuilder</name>
+    </assembly>
+    <members>
+        <member name="T:Libraries.DapperBuilder.CommandBuilder">
+            <summary>
+            CommandBuilder wraps an underlying SQL statement and the associated parameters. <br />
+            Allows to easily add new clauses to underlying statement and also add new parameters.
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.CommandBuilder.Connection">
+            <inheritdoc/>
+        </member>
+        <member name="F:Libraries.DapperBuilder.CommandBuilder._lineBreaksRegex">
+            <summary>
+            Identify all types of line-breaks
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.CommandBuilder.#ctor(System.Data.IDbConnection)">
+            <summary>
+            New CommandBuilder. 
+            </summary>
+            <param name="cnn"></param>
+        </member>
+        <member name="M:Libraries.DapperBuilder.CommandBuilder.#ctor(System.Data.IDbConnection,System.FormattableString)">
+            <summary>
+            New CommandBuilder based on an initial command. <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            </summary>
+            <param name="cnn"></param>
+            <param name="command">SQL command</param>
+        </member>
+        <member name="M:Libraries.DapperBuilder.CommandBuilder.AddParameter(System.String,System.Object,System.Nullable{System.Data.DbType},System.Nullable{System.Data.ParameterDirection},System.Nullable{System.Int32},System.Nullable{System.Byte},System.Nullable{System.Byte})">
+            <summary>
+            Adds single parameter to current Command Builder. <br />
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.CommandBuilder.AddDynamicParams(System.Object)">
+            <summary>
+            Adds the properties of an object (like a POCO) to current Command Builder. Does not check for name clashes.
+            </summary>
+            <param name="param"></param>
+        </member>
+        <member name="M:Libraries.DapperBuilder.CommandBuilder.MergeParameter(System.String,System.Object)">
+            <summary>
+            Adds single parameter to current Command Builder. <br />
+            Checks for name clashes, and will rename parameter if necessary. <br />
+            If parameter is renamed the new name will be returned, else returns null.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.CommandBuilder.Append(System.FormattableString)">
+            <summary>
+            Appends a statement to the current command. <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            </summary>
+            <param name="statement">SQL command</param>
+        </member>
+        <member name="M:Libraries.DapperBuilder.CommandBuilder.Replace(System.String,System.FormattableString)">
+            <summary>
+            Replaces a text by a replacement text<br />
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.CommandBuilder.AdjustMultilineString(System.String)">
+            <summary>
+            Given a text block (multiple lines), this removes the left padding of the block, by calculating the minimum number of spaces which happens in EVERY line.
+            Then, other methods writes the lines one by one, which in case will respect the current indent of the writer.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.CommandBuilder.AppendLine(System.FormattableString)">
+            <summary>
+            Appends a statement to the current command, but before statement adds a linebreak. <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            </summary>
+            <param name="statement">SQL command</param>
+        </member>
+        <member name="P:Libraries.DapperBuilder.CommandBuilder.Sql">
+            <summary>
+            SQL of Command
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.CommandBuilder.Parameters">
+            <summary>
+            Parameters of Command
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.DynamicParametersExtensions">
+            <summary>
+            Extensions over DynamicParamters
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.DynamicParametersExtensions.MergeParameter(Dapper.DynamicParameters,System.String,System.Object)">
+            <summary>
+            Adds single parameter to DynamicParameters. <br />
+            Checks for name clashes, and will rename parameter if necessary. <br />
+            If parameter is renamed the new name will be returned, else returns null.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.DynamicParametersExtensions.MergeParameters(Dapper.DynamicParameters,Dapper.DynamicParameters,System.String)">
+            <summary>
+            Merges multiple parameters into this CommandBuilder. <br />
+            Checks for name clashes, and will rename parameters (in the CommandBuilder only) if necessary. <br />
+            If some parameter is renamed the returned Sql statement will containg the original sql replaced with new names, else (if nothing changed) returns null. <br />
+            This method does NOT append Parser SQL to CommandBuilder SQL (you may want to save this SQL statement elsewhere)
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.Filter">
+            <summary>
+            Filter statement defined in a single statement <br />
+            It can include multiple conditions (if defined in a single statement during constructor), <br />
+            but usually this is used as one condition (one column, one comparison operator, and one parameter).
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.Filter.Sql">
+            <summary>
+            Formatted SQL statement using parameters (@p0, @p1, etc)
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.Filter.Parameters">
+            <summary>
+            Dictionary of Dapper parameters
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.Filter.#ctor(System.FormattableString)">
+            <summary>
+            New Filter statement. <br />
+            Example: $"[CategoryId] = {categoryId}" <br />
+            Example: $"[Name] LIKE {productName}"
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.Filter.WriteFilter(System.Text.StringBuilder)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libraries.DapperBuilder.Filter.MergeParameters(Dapper.DynamicParameters)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Libraries.DapperBuilder.Filters">
+            <summary>
+            Multiple Filter statements which are grouped together. Can be grouped with ANDs or ORs.
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.Filters.Type">
+            <summary>
+            By default Filter Groups are combined with AND operator. But you can use OR.
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.Filters.FiltersType">
+            <summary>
+            How a list of Filters are combined (AND operator or OR operator)
+            </summary>
+        </member>
+        <member name="F:Libraries.DapperBuilder.Filters.FiltersType.AND">
+            <summary>
+            AND
+            </summary>
+        </member>
+        <member name="F:Libraries.DapperBuilder.Filters.FiltersType.OR">
+            <summary>
+            OR
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.Filters.#ctor(Libraries.DapperBuilder.Filters.FiltersType,System.FormattableString[])">
+            <summary>
+            Create a new group of filters.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.Filters.#ctor(System.FormattableString[])">
+            <summary>
+            Create a new group of filters which are combined with AND operator.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.Filters.WriteFilter(System.Text.StringBuilder)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libraries.DapperBuilder.Filters.MergeParameters(Dapper.DynamicParameters)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libraries.DapperBuilder.Filters.BuildFilters(Dapper.DynamicParameters)">
+            <summary>
+            If you're using Filters in standalone structure (without QueryBuilder), <br />
+            you can just "build" the filters over a DynamicParameters and get the string for the filters (with leading WHERE)
+            </summary>
+            <param name="target"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Libraries.DapperBuilder.FluentQueryBuilder">
+            <summary>
+            FluentQueryBuilder allows to build queries using a Fluent-API interface
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.#ctor(System.Data.IDbConnection)">
+            <summary>
+            New empty FluentQueryBuilder. <br />
+            Should be constructed using .Select(), .From(), .Where(), etc.
+            </summary>
+            <param name="cnn"></param>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.Select(System.FormattableString)">
+            <summary>
+            Adds one column to the select clauses
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.Select(System.FormattableString[])">
+            <summary>
+            Adds one or more columns to the select clauses
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.SelectDistinct(System.FormattableString)">
+            <summary>
+            Adds one column to the select clauses, and defines that query is a SELECT DISTINCT type
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.SelectDistinct(System.FormattableString[])">
+            <summary>
+            Adds one or more columns to the select clauses, and defines that query is a SELECT DISTINCT type
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.From(System.FormattableString)">
+            <summary>
+            Adds a new table to from clauses. <br />
+            "FROM" word is optional. <br />
+            You can add an alias after table name. <br />
+            You can also add INNER JOIN, LEFT JOIN, etc (with the matching conditions).
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.OrderBy(System.FormattableString)">
+            <summary>
+            Adds a new column to orderby clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.GroupBy(System.FormattableString)">
+            <summary>
+            Adds a new column to groupby clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.Having(System.FormattableString)">
+            <summary>
+            Adds a new condition to having clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.Limit(System.Int32,System.Int32)">
+            <summary>
+            Adds offset and rowcount clauses
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.Where(Libraries.DapperBuilder.Filter)">
+            <summary>
+            Adds a new condition to where clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.Where(Libraries.DapperBuilder.Filters)">
+            <summary>
+            Adds a new condition to where clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.FluentQueryBuilder.Where(System.FormattableString)">
+            <summary>
+            Adds a new condition to where clauses. <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.FluentQueryBuilder.Sql">
+            <summary>
+            <inheritdoc />
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.FluentQueryBuilder.Parameters">
+            <summary>
+            Parameters of Query
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.FluentQueryBuilder.Connection">
+            <summary>
+            Underlying connection
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.IEmptyQueryBuilder">
+            <summary>
+            Empty QueryBuilder (initialized without a template), which can start both with Select() or SelectDistinct()
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IEmptyQueryBuilder.Select(System.FormattableString)">
+            <summary>
+            Adds one column to the select clauses
+            </summary>
+            <param name="column"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IEmptyQueryBuilder.Select(System.FormattableString[])">
+            <summary>
+            Adds one or more columns to the select clauses
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IEmptyQueryBuilder.SelectDistinct(System.FormattableString)">
+            <summary>
+            Adds one column to the select clauses, and defines that query is a SELECT DISTINCT type
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IEmptyQueryBuilder.SelectDistinct(System.FormattableString[])">
+            <summary>
+            Adds one or more columns to the select clauses, and defines that query is a SELECT DISTINCT type
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.IFromBuilder">
+            <summary>
+            Query Builder with one or more from clauses, which can still add more clauses to from
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IFromBuilder.From(System.FormattableString)">
+            <summary>
+            Adds a new table to from clauses. <br />
+            "FROM" word is optional. <br />
+            You can add an alias after table name. <br />
+            You can also add INNER JOIN, LEFT JOIN, etc (with the matching conditions).
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IFromBuilder.Where(Libraries.DapperBuilder.Filter)">
+            <summary>
+            Adds a new group of conditions to where clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IFromBuilder.Where(Libraries.DapperBuilder.Filters)">
+            <summary>
+            Adds a new condition to where clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IFromBuilder.Where(System.FormattableString)">
+            <summary>
+            Adds a new condition to where clauses. <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IFromBuilder.OrderBy(System.FormattableString)">
+            <summary>
+            Adds a new column to orderby clauses.
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.IGroupByBuilder">
+            <summary>
+            Query Builder with one or more groupby clauses, which can still add more clauses to groupby
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.IGroupByHavingBuilder">
+            <summary>
+            Query Builder with one or more having clauses, which can still add more clauses to having
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IGroupByHavingBuilder.Having(System.FormattableString)">
+            <summary>
+            Adds a new condition to having clauses.
+            </summary>
+            <param name="having"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IGroupByHavingBuilder.OrderBy(System.FormattableString)">
+            <summary>
+            Adds a new condition to orderby clauses.
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.IOrderByBuilder">
+            <summary>
+            Query Builder with one or more orderby clauses, which can still add more clauses to orderby
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IOrderByBuilder.OrderBy(System.FormattableString)">
+            <summary>
+            Adds a new condition to orderby clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IOrderByBuilder.Limit(System.Int32,System.Int32)">
+            <summary>
+            Adds offset and rowcount clauses
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.ISelectBuilder">
+            <summary>
+            Query Builder which is preparing a SELECT statement
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ISelectBuilder.Select(System.FormattableString)">
+            <summary>
+            Adds one column to the select clauses
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ISelectBuilder.Select(System.FormattableString[])">
+            <summary>
+            Adds one or more columns to the select clauses
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ISelectBuilder.From(System.FormattableString)">
+            <summary>
+            Adds a new table to from clauses. <br />
+            "FROM" word is optional. <br />
+            You can add an alias after table name. <br />
+            You can also add INNER JOIN, LEFT JOIN, etc (with the matching conditions).
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.ISelectDistinctBuilder">
+            <summary>
+            QueryBuilder which is preparing a SELECT DISTINCT statement
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ISelectDistinctBuilder.SelectDistinct(System.FormattableString)">
+            <summary>
+            Adds one column to the select clauses, and defines that query is a SELECT DISTINCT type
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ISelectDistinctBuilder.SelectDistinct(System.FormattableString[])">
+            <summary>
+            Adds one or more columns to the select clauses, and defines that query is a SELECT DISTINCT type
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ISelectDistinctBuilder.From(System.FormattableString)">
+            <summary>
+            Adds a new table to from clauses. <br />
+            "FROM" word is optional. <br />
+            You can add an alias after table name. <br />
+            You can also add INNER JOIN, LEFT JOIN, etc (with the matching conditions).
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.IWhereBuilder">
+            <summary>
+            Query Builder with one or more clause in where, which can still add more clauses to where
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IWhereBuilder.Where(Libraries.DapperBuilder.Filter)">
+            <summary>
+            Adds a new condition to where clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IWhereBuilder.Where(Libraries.DapperBuilder.Filters)">
+            <summary>
+            Adds a new condition to where clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IWhereBuilder.Where(System.FormattableString)">
+            <summary>
+            Adds a new condition to where clauses. <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IWhereBuilder.GroupBy(System.FormattableString)">
+            <summary>
+            Adds a new condition to groupby clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IWhereBuilder.OrderBy(System.FormattableString)">
+            <summary>
+            Adds a new condition to orderby clauses.
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.ICommand">
+            <summary>
+            Any command (Contains Connection, SQL, and Parameters)
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.ICommand.Sql">
+            <summary>
+            SQL of Command
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.ICommand.Parameters">
+            <summary>
+            Parameters of Command
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.ICommand.Connection">
+            <summary>
+            Underlying connection
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.ICompleteCommand">
+            <summary>
+            Any command (Contains Connection, SQL, and Parameters) which is complete for execution.
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.ICompleteCommandExtensions">
+            <summary>
+            ICompleteCommands are "ready to run" - this is where we extend those commands with Dapper facades
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.Execute(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the number of rows affected.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.ExecuteAsync(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the number of rows affected.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.Query``1(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Boolean,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as T.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirst``1(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as T.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirstOrDefault``1(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as T.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QuerySingle``1(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as T.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.Query(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Boolean,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as dynamic objects.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirst(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as dynamic objects.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirstOrDefault(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as dynamic objects.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QuerySingle(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as dynamic objects.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.Query(Libraries.DapperBuilder.ICompleteCommand,System.Type,System.Data.IDbTransaction,System.Boolean,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as type.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirst(Libraries.DapperBuilder.ICompleteCommand,System.Type,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as type.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirstOrDefault(Libraries.DapperBuilder.ICompleteCommand,System.Type,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as type.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QuerySingle(Libraries.DapperBuilder.ICompleteCommand,System.Type,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as type.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryAsync``1(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as T.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirstAsync``1(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as T.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirstOrDefaultAsync``1(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as T.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QuerySingleAsync``1(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as T.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryAsync(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as dynamic objects.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirstAsync(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as dynamic objects.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirstOrDefaultAsync(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as dynamic objects.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QuerySingleAsync(Libraries.DapperBuilder.ICompleteCommand,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as dynamic objects.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryAsync(Libraries.DapperBuilder.ICompleteCommand,System.Type,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as type.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirstAsync(Libraries.DapperBuilder.ICompleteCommand,System.Type,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as type.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QueryFirstOrDefaultAsync(Libraries.DapperBuilder.ICompleteCommand,System.Type,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as type.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.ICompleteCommandExtensions.QuerySingleAsync(Libraries.DapperBuilder.ICompleteCommand,System.Type,System.Data.IDbTransaction,System.Nullable{System.Int32},System.Nullable{System.Data.CommandType})">
+            <summary>
+            Executes the query (using Dapper), returning the data typed as type.
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.IDbConnectionExtensions">
+            <summary>
+            Extends IDbConnection to easily build QueryBuilder or FluentQueryBuilder
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IDbConnectionExtensions.QueryBuilder(System.Data.IDbConnection)">
+            <summary>
+            Creates a new empty FluentQueryBuilder over current connection
+            </summary>
+            <param name="cnn"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IDbConnectionExtensions.QueryBuilder(System.Data.IDbConnection,System.FormattableString)">
+            <summary>
+            Creates a new QueryBuilder over current connection
+            </summary>
+            <param name="cnn"></param>
+            <param name="query">You can use "{where}" or "/**where**/" in your query, and it will be replaced by "WHERE + filters" (if any filter is defined). <br />
+            You can use "{filters}" or "/**filters**/" in your query, and it will be replaced by "filters" (without where) (if any filter is defined).
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IDbConnectionExtensions.CommandBuilder(System.Data.IDbConnection,System.FormattableString)">
+            <summary>
+            Creates a new CommandBuilder over current connection
+            </summary>
+            <param name="cnn"></param>
+            <param name="command">SQL command</param>
+            <returns></returns>
+        </member>
+        <member name="T:Libraries.DapperBuilder.IFilter">
+            <summary>
+            Can be both individual filter or a list of filters.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IFilter.WriteFilter(System.Text.StringBuilder)">
+            <summary>
+            Writes the SQL Statement of the filter
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.IFilter.MergeParameters(Dapper.DynamicParameters)">
+            <summary>
+            Merges parameters from this filter into a CommandBuilder. <br />
+            Checks for name clashes, and will rename parameters (in CommandBuilder) if necessary. <br />
+            If some parameter is renamed the underlying Sql statement will have the new parameter names replaced by their new names.<br />
+            This method does NOT append Parser SQL to CommandBuilder SQL (you may want to save this SQL statement elsewhere)
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.InterpolatedStatementParser">
+            <summary>
+            Parses an interpolated-string SQL statement into a injection-safe statement (with parameters as @p0, @p1, etc) and a dictionary of parameter values.
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.InterpolatedStatementParser.Sql">
+            <summary>
+            Injection-safe statement, with parameters as @p0, @p1, etc.
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.InterpolatedStatementParser.Parameters">
+            <summary>
+            Dictionary of Dapper parameters
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.InterpolatedStatementParser.AutoGeneratedParameterPrefix">
+            <summary>
+            By default your interpolated strings will generate parameters like @p0, @p1, etc. <br />
+            If your database does not accept @ you can change for anything else. <br />
+            Example: if you set as ":Parameter" you'll get :Parameter1, :Parameter2, etc.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.InterpolatedStatementParser.#ctor(System.FormattableString)">
+            <summary>
+            Parses an interpolated-string SQL statement into a injection-safe statement (with parameters as @p0, @p1, etc) and a dictionary of parameter values.
+            </summary>
+            <param name="query"></param>
+        </member>
+        <member name="M:Libraries.DapperBuilder.InterpolatedStatementParser.MergeParameters(Dapper.DynamicParameters)">
+            <summary>
+            Merges parameters from this query/statement into a CommandBuilder. <br />
+            Checks for name clashes, and will rename parameters (in CommandBuilder) if necessary. <br />
+            If some parameter is renamed the underlying Sql statement will have the new parameter names replaced by their new names.<br />
+            This method does NOT append Parser SQL to CommandBuilder SQL (you may want to save this SQL statement elsewhere)
+            </summary>
+        </member>
+        <member name="T:Libraries.DapperBuilder.QueryBuilder">
+            <summary>
+            Query Builder wraps an underlying SQL statement and the associated parameters. <br />
+            Allows to easily add new clauses to underlying statement and also add new parameters. <br />
+            On top of that it also loads a "Filters" property which can track a list of filters <br />
+            which are later combined (by default with AND) and will replace the keyword /**where**/
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.QueryBuilder.FiltersType">
+            <summary>
+            How a list of Filters are combined (AND operator or OR operator)
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.QueryBuilder.#ctor(System.Data.IDbConnection)">
+            <summary>
+            New empty QueryBuilder. <br />
+            Query should be built using .Append(), .AppendLine(), or .Where(). <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            Where filters will later replace /**where**/ keyword
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.QueryBuilder.#ctor(System.Data.IDbConnection,System.FormattableString)">
+            <summary>
+            New QueryBuilder based on an initial query. <br />
+            Query can be modified using .Append(), .AppendLine(), .Where(). <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            Where filters will later replace /**where**/ keyword
+            </summary>
+            <param name="cnn"></param>
+            <param name="query">You can use "{where}" or "/**where**/" in your query, and it will be replaced by "WHERE + filters" (if any filter is defined). <br />
+            You can use "{filters}" or "/**filters**/" in your query, and it will be replaced by "AND filters" (without where) (if any filter is defined).
+            </param>
+        </member>
+        <member name="M:Libraries.DapperBuilder.QueryBuilder.Where(Libraries.DapperBuilder.Filter)">
+            <summary>
+            Adds a new condition to where clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.QueryBuilder.Where(Libraries.DapperBuilder.Filters)">
+            <summary>
+            Adds a new condition to where clauses.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.QueryBuilder.Where(System.FormattableString)">
+            <summary>
+            Adds a new condition to where clauses. <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.QueryBuilder.GetFilters">
+            <summary>
+            Writes the SQL Statement of all filter(s) (going recursively if there are nested filters) <br />
+            Does NOT add leading "WHERE" keyword. <br />
+            Returns null if no filter was defined.
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.QueryBuilder.Sql">
+            <summary>
+            <inheritdoc />
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.QueryBuilder.Parameters">
+            <summary>
+            Parameters of Query
+            </summary>
+        </member>
+        <member name="P:Libraries.DapperBuilder.QueryBuilder.Connection">
+            <summary>
+            Underlying connection
+            </summary>
+        </member>
+        <member name="M:Libraries.DapperBuilder.QueryBuilder.Append(System.FormattableString)">
+            <summary>
+            Appends a statement to the current command. <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            </summary>
+            <param name="statement">SQL command</param>
+        </member>
+        <member name="M:Libraries.DapperBuilder.QueryBuilder.AppendLine(System.FormattableString)">
+            <summary>
+            Appends a statement to the current command, but before statement adds a linebreak. <br />
+            Parameters embedded using string-interpolation will be automatically converted into Dapper parameters.
+            </summary>
+            <param name="statement">SQL command</param>
+        </member>
+    </members>
+</doc>
