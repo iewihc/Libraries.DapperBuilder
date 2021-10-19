@@ -3,14 +3,13 @@
   <PropertyGroup>
     <Authors>Wei</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Drizin/DapperQueryBuilder/</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/iewihc/Libraries.DapperBuilder/</PackageProjectUrl>
     <Description>Dapper Query Builder</Description>
     <Copyright>Wei</Copyright>
     <Company>Wei</Company>
-    <Version>1.0.3</Version>
+    <Version>1.0.0</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>Dapper-QueryBuilder</PackageId>
-    <DocumentationFile>DapperQueryBuilder.xml</DocumentationFile>
+    <PackageId>Ekko-Dapper-QueryBuilder</PackageId>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
