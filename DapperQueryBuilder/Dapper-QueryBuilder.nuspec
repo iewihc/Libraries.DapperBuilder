@@ -7,12 +7,12 @@
     <authors>Wei</authors>
     <owners>Wei</owners>
     <license type="expression">MIT</license>
-    <projectUrl>https://github.com/Drizin/Libraries.DapperBuilder</projectUrl>
+    <projectUrl>https://github.com/iewihc/Libraries.DapperBuilder</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Dapper Query Builder using String Interpolation and Fluent API</description>
-    <copyright>Copyright Rick Drizin 2020</copyright>
+    <copyright>Copyright Wei 2021</copyright>
     <tags>dapper;query builder</tags>
-    <repository type="git" url="https://github.com/Drizin/Libraries.DapperBuilder" commit="e313e56c574147726bf4d15c0d61980cc0a8c853" />
+    <repository type="git" url="https://github.com/iewihc/Libraries.DapperBuilder" commit="" />
     <dependencies>
     </dependencies>
   </metadata>
